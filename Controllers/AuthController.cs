@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -13,12 +14,13 @@ namespace companyservice.Controllers
     [Route("api/v1.0/market/[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly ILogger<AuthController> _logger;
         private readonly IJwtAuthenticationManager jwtAuthenticationManager;
 
-        public AuthController(IJwtAuthenticationManager jwtAuthenticationManager)
+        public AuthController(IJwtAuthenticationManager jwtAuthenticationManager, ILogger<AuthController> logger)
         {
             this.jwtAuthenticationManager = jwtAuthenticationManager;
-
+            this._logger = logger;
         }
 
         // GET: api/<AuthController>
@@ -29,17 +31,14 @@ namespace companyservice.Controllers
         }
 
         // GET api/<AuthController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }  
+        
         [Consumes("application/json")]
         [Produces("application/json")]
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public LoggedinUser Authenticate([FromBody] UserCred userCred)
         {
+            _logger.LogInformation(message: "Login info");
             Debug.WriteLine("Login Info");
             Debug.WriteLine("username :" + userCred.username);
             Debug.WriteLine("password :" + userCred.password);

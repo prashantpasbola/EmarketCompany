@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace companyservice.Controllers
 {
@@ -15,10 +16,12 @@ namespace companyservice.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
+        private readonly ILogger<CompanyController> _logger;
         private readonly CompanyService _companyService;
-        public CompanyController(CompanyService companyService)
+        public CompanyController(CompanyService companyService, ILogger<CompanyController> logger)
         {
             _companyService = companyService;
+            _logger = logger;
         }
 
 
@@ -33,6 +36,7 @@ namespace companyservice.Controllers
         [Route("info/companycode")]
         public ActionResult<Company> Info(string companycode)
         {
+            _logger.LogInformation(message: "Company info get");
             var emp = _companyService.Get(companycode);
 
             if (emp == null)
@@ -52,6 +56,8 @@ namespace companyservice.Controllers
         [Route("register")]
         public object Register([FromBody] Company company)
         {
+            _logger.LogInformation(message: "Company Register info get");
+
             Debug.WriteLine("Register Info");
             Debug.WriteLine("CompanyName :" + company.CompanyName);
             Debug.WriteLine("CompanyCEO :" + company.CompanyCEO);
@@ -72,6 +78,8 @@ namespace companyservice.Controllers
         [Route("delete/{companycode}")]
         public object Delete(string companyCode)
         {
+            _logger.LogInformation(message: "Company Delete info get");
+
             Debug.WriteLine("Delete Info");
             Debug.WriteLine("company Code :" + companyCode);
 
@@ -90,7 +98,7 @@ namespace companyservice.Controllers
             }
             catch (Exception ex)
             {
-                Console.Write(ex);
+                _logger.LogError(ex ,message: "error in delete");
                 return NoContent();
             }
 
